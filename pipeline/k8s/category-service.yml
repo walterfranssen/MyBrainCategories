@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mybraintagsapi-service
+  namespace: mybrain
+  labels:
+    name: mybraintagsapi-service
+spec:
+  ports:
+    - port: 27017
+      targetPort: 27017
+      protocol: TCP
+  selector:
+    app: mybraintagsapi
+  type: ClusterIP

@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mybraincategorysapi
+  namespace: mybrain
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mybraincategorysapi
+    spec:
+      containers:
+        - name: mybraincategorysapi
+          image: walterfranssen/mybraincategories:latest
+          imagePullPolicy: "Always"
+          env:
+          - name: MongoSettings__Server
+            value: "mongo-service"
+          - name: MongoSettings__Database
+            value: "MyBrainTest"
+          ports:
+            - containerPort: 80
