@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using MyBrainCategories.Application.Categories.Command.CreateCategory;
 using MyBrainCategories.Application.Extensions;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using MyBrainCategories.Application.Infrastructure;
+using MyBrainCategories.Api.Utils;
 
 namespace MyBrainCategories.Api
 {
@@ -28,6 +26,7 @@ namespace MyBrainCategories.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMediatR(typeof(CreateCategoryCommand));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
 
             services.AddApplication(Configuration.GetValue<string>("MongoSettings:Server"),
                 Configuration.GetValue<string>("MongoSettings:Database"));
@@ -38,7 +37,15 @@ namespace MyBrainCategories.Api
             });
 
             services.AddCors();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+            .AddMvcOptions(o =>
+            {
+                o.Filters.Add<ExceptionMapperFilterAttribute>();
+            })
+            .AddFluentValidation(o =>
+            {
+                o.RegisterValidatorsFromAssemblyContaining(typeof(RequestValidationBehavior<,>));
+            }); 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
