@@ -14,7 +14,8 @@ using MyBrainCategories.Application.Categories.Queries.GetById;
 namespace MyBrainCategories.Api.Controllers
 {
     [Route("[controller]")]
-    public class CategoriesController : Controller
+    [ApiController]
+    public class CategoriesController : ControllerBase
     {
         private readonly IMediator mediator;
 
